@@ -6,7 +6,14 @@
       <button @click="reset" :disabled="disabling" title="Remove all lines">Remove all</button>
     </div>
 
-    <Dice v-for="( dice, id ) in nbDice" :key="id" :dicedata="nbDice[id]" @deleteme="deletedice"/>
+    <Dice
+      v-for="( dice, id ) in nbDice"
+      :key="id"
+      :diceid="id"
+      :dicedata="dice"
+      @roll="rolling"
+      @deleteme="deletedice"
+    />
 
     <button @click="allin" v-if="nbDice.length > 2" title="Rollin all dices">All in</button>
   </div>
@@ -32,15 +39,20 @@ export default {
 
   data() {
     return {
-      nbDice: [
-        dataDefault,
-      ],
+      nbDice: [],
     };
+  },
+
+  created() {
+    this.adding();
   },
 
   methods: {
     adding() {
-      this.nbDice.push(this.nbDice[this.nbDice.length - 1]);
+      const dices = this.nbDice.length;
+      const dataNew = dices > 0 ? this.nbDice[dices - 1] : { ...dataDefault };
+
+      this.nbDice.push(dataNew);
     },
     remove() {
       if (this.nbDice.length) {
@@ -53,6 +65,10 @@ export default {
     allin() {
       this.$emit('allin');
     },
+    rolling(id, value) {
+      // console.log('rolling - ID:', id, 'RESULT:', value);
+      this.nbDice[id].result = value;
+    },
     deletedice(index) {
       this.nbDice.splice(index, 1);
     },
@@ -62,14 +78,6 @@ export default {
     disabling() {
       return this.nbDice.length <= 0;
     },
-  },
-
-  created() {
-    // console.log('Created > nbDice:', this.nbDice, 'nbDice length:', this.nbDice.length);
-  },
-
-  updated() {
-    console.log('Updated > nbDice:', this.nbDice);
   },
 };
 </script>

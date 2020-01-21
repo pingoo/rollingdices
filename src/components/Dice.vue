@@ -1,7 +1,7 @@
 <template>
   <div class="dice">
     <input
-      v-model.number="number"
+      v-model.number="dicedata.number"
       type="number"
       class="dice__nbr"
       min="1"
@@ -9,7 +9,7 @@
       title="Number of dice"
     >
 
-    <select v-model.number="select" class="select" title="Type of dice">
+    <select v-model.number="dicedata.select" class="select" title="Type of dice">
       <option value="2">d2</option>
       <option value="4">d4</option>
       <option value="6">d6</option>
@@ -20,17 +20,17 @@
       <option value="100">d100</option>
     </select>
 
-    <input v-model.number="modificator" type="number" title="Modificator (+/-)">
+    <input v-model.number="dicedata.modificator" type="number" title="Modificator (+/-)">
 
-    <button @click="roll" :disabled="number < 1" class="btnRollin">Roll</button>
+    <button @click="roll" :disabled="dicedata.number < 1" class="btnRollin">Roll</button>
 
-    <span v-if="result!==undefined" class="result">{{ result }}</span>
+    <span v-if="dicedata.result!==undefined" class="result">{{ dicedata.result }}</span>
 
-    <span v-if="explain" class="explain">{{ explain }}</span>
+    <span v-if="dicedata.explain" class="explain">{{ dicedata.explain }}</span>
 
     <button
       @click="deleteme"
-      v-if="result!==undefined"
+      v-if="dicedata.result!==undefined"
       class="deleteRoll"
       title="Delete this line"
     >Delete</button>
@@ -41,17 +41,12 @@
 export default {
   name: 'Dice',
 
-  data() {
-    return {
-      number: this.dicedata.number,
-      select: this.dicedata.select,
-      modificator: this.dicedata.modificator,
-      result: this.dicedata.result,
-      explain: this.dicedata.explain,
-    };
-  },
-
   props: {
+    diceid: {
+      type: Number,
+      required: true,
+      default: 0,
+    },
     dicedata: {
       type: Object,
       required: true,
@@ -60,18 +55,20 @@ export default {
 
   methods: {
     roll() {
-      const seed = Math.floor(Math.random() * parseInt(this.select, 10)) + 1;
+      const seed = Math.floor(Math.random() * parseInt(this.dicedata.select, 10)) + 1;
+      const result = parseInt(this.dicedata.number, 10) * seed
+      + parseInt(this.dicedata.modificator, 10);
 
-      this.result = parseInt(this.number, 10) * seed + parseInt(this.modificator, 10);
-
-      if (this.modificator !== 0) {
-        this.explain = `(without mod = ${parseInt(this.number, 10) * seed})`;
+      if (this.dicedata.modificator !== 0) {
+        this.dicedata.explain = `
+          (without mod = ${parseInt(this.dicedata.number, 10) * seed})
+        `;
       }
 
-      this.$emit('roll', this);
+      this.$emit('roll', this.diceid, result);
     },
     deleteme() {
-      this.$emit('deleteme', this);
+      this.$emit('deleteme', this.diceid);
     },
   },
 
