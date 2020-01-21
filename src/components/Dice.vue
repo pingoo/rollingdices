@@ -29,7 +29,7 @@
     <span v-if="explain" class="explain">{{ explain }}</span>
 
     <button
-      @click="delline"
+      @click="deleteme"
       v-if="result!==undefined"
       class="deleteRoll"
       title="Delete this line"
@@ -40,6 +40,7 @@
 <script>
 export default {
   name: 'Dice',
+
   data() {
     return {
       result: undefined,
@@ -49,9 +50,14 @@ export default {
       explain: '',
     };
   },
+
   props: {
-    diceid: Number,
+    diceid: {
+      type: Number,
+      required: true,
+    },
   },
+
   methods: {
     roll() {
       const seed = Math.floor(Math.random() * parseInt(this.select, 10)) + 1;
@@ -62,10 +68,12 @@ export default {
         this.explain = `(without mod = ${parseInt(this.number, 10) * seed})`;
       }
     },
-    delline() {
-      this.$emit('deletethis', this); // this = Dice compoenent
+    deleteme() {
+      console.log('Dice - deleteme > this:', this);
+      this.$emit('deleteme', this);
     },
   },
+
   created() {
     this.$parent.$on('allin', this.roll);
   },

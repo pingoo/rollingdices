@@ -6,11 +6,9 @@
       <button @click="reset" :disabled="disabling" title="Remove all lines">Remove all</button>
     </div>
 
-    <template v-for="( dice, index ) in nbDice">
-      <Dice :key="index" :diceid="index" @deletethis="deletethis"/>
-    </template>
+    <Dice v-for="( dice, index ) in nbDice" :key="index" :diceid="index" @deleteme="deletedice"/>
 
-    <button @click="allin" v-if="nbDice.length>2" title="Rollin all dices">All in</button>
+    <button @click="allin" v-if="nbDice.length > 2" title="Rollin all dices">All in</button>
   </div>
 </template>
 
@@ -19,14 +17,17 @@ import Dice from './components/Dice.vue';
 
 export default {
   name: 'App',
+
   components: {
     Dice,
   },
+
   data() {
     return {
       nbDice: [Dice],
     };
   },
+
   methods: {
     adding() {
       this.nbDice.push(Dice);
@@ -42,10 +43,12 @@ export default {
     allin() {
       this.$emit('allin');
     },
-    deletethis(dice) {
-      console.log('dice', dice);
+    deletedice(dice) {
+      console.log(this.nbDice, 'deletedice - dice:', dice.diceid);
+      // this.nbDice.splice(index, 1);
     },
   },
+
   computed: {
     disabling() {
       return this.nbDice.length <= 0;
