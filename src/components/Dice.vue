@@ -43,17 +43,17 @@ export default {
 
   data() {
     return {
-      result: undefined,
-      number: 1,
-      select: 20,
-      modificator: 0,
-      explain: '',
+      number: this.dicedata.number,
+      select: this.dicedata.select,
+      modificator: this.dicedata.modificator,
+      result: this.dicedata.result,
+      explain: this.dicedata.explain,
     };
   },
 
   props: {
-    diceid: {
-      type: Number,
+    dicedata: {
+      type: Object,
       required: true,
     },
   },
@@ -67,9 +67,10 @@ export default {
       if (this.modificator !== 0) {
         this.explain = `(without mod = ${parseInt(this.number, 10) * seed})`;
       }
+
+      this.$emit('roll', this);
     },
     deleteme() {
-      console.log('Dice - deleteme > this:', this);
       this.$emit('deleteme', this);
     },
   },
